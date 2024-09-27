@@ -1,6 +1,6 @@
 package com.ism.Views;
 
-import com.ism.Repositories.JPA.UserRepoJpa;
+import com.ism.Core.Database.UserRepoListInt;
 import com.ism.Service.UserServiceInt;
 import com.ism.Views.Impl.ViewImpl;
 import com.ism.entities.Client;
@@ -16,18 +16,17 @@ import java.util.List;
 public class UserViews extends ViewImpl<User,Client> implements UserViewInt {
 
 
-  private UserServiceInt<User,UserRepoJpa> userService;
+  private UserServiceInt<User,UserRepoListInt> userService;
 
-  public UserViews(Scanner scan,UserServiceInt<User,UserRepoJpa> userService) {
+  public UserViews(Scanner scan,UserServiceInt<User,UserRepoListInt> userService) {
     ViewImpl.scan = scan;
     this.userService = userService;
   }
 
   @Override
   public User created(Client client) {
-    scan.nextLine();
     User user = new User();
-      System.out.println("Veuillez saisir votre email");
+    do {
       user.setEmail(scan.nextLine());
       System.out.println("Veuillez saisir votre login");
       user.setLogin(scan.nextLine());
@@ -43,6 +42,8 @@ public class UserViews extends ViewImpl<User,Client> implements UserViewInt {
       }else{
         user.setRole(findRole());
       }
+    } while (userService.findData().selectByLogin(user.getLogin())!= null);
+    System.out.println("Veuillez saisir votre email");
     return user;
   }
 

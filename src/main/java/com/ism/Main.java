@@ -2,6 +2,8 @@ package com.ism;
 
 import java.util.Scanner;
 
+import com.ism.Core.Database.ClientRepoListInt;
+import com.ism.Core.Database.UserRepoListInt;
 import com.ism.Factory.FactoryService.FactoryService;
 import com.ism.Factory.FactoryViews.FactoryViews;
 import com.ism.Factory.FactotyRepo.JPA.FactoryRepoJpa;
@@ -26,30 +28,80 @@ public class Main {
         UserRepoJpa uRepo = FactoryRepoJpa.getInstanceU();
         ClientRepoJpa cRepo = FactoryRepoJpa.getInstanceC();
         //
-        ClientServiceInt<Client,ClientRepoJpa>  cService = FactoryService.getInstanceC(cRepo);
-        UserServiceInt<User,UserRepoJpa> uService = FactoryService.getInstanceU(uRepo);
+        ClientServiceInt<Client,ClientRepoListInt>  cService = FactoryService.getInstanceC(cRepo);
+        UserServiceInt<User,UserRepoListInt> uService = FactoryService.getInstanceU(uRepo);
         UserViewInt uViews = FactoryViews.getInstanceU(sc, uService);
         ClientViewsInt cViews = FactoryViews.getInstanceC(sc, cService, uViews);
         do {
-            choix = affichageMenuprincipal3();
+            choix = affichageMenuprincipal();
             switch (choix) {
+                case 1:
+                    do {
+                        choix2 = affichageMenuBoutiquier();
+                        switch (choix2) {
                             case 1:
                                 cService.saveList(cViews.created(null));
                                 break;
                             case 2:
                                 cViews.affiche(cService.show());
-                                break;
+                                break;   
                             case 3:
-                                uService.saveList(uViews.created(null));
-                                break;
-                            
+                                sc.nextLine();
+                                System.out.println(cService.search(SaisieNumero()));
+                                break;  
                             case 4:
-                                uViews.affiche(uService.show());
+                                do {
+                                    choix2=affichageSousMenu("1-Pour un client","2-Pour un boutiquier ou admin");
+                                    
+                                    switch (choix2) {
+                                        case 1:
+                                            sc.nextLine();
+                                            cl = cService.search(SaisieNumero());
+                                            if (cl.getUser() == null) {//.getRole pour les listes
+                                                User us = uViews.created(cl);
+                                                uService.saveList(us);
+                                                cl.setUser(us);
+                                            } else{
+                                                System.out.println("Ce client a deje un compte");
+                                            }
+                                            break;
+                                        case 2:
+                                            sc.nextLine();
+                                            User us = uViews.created(null);
+                                            uService.saveList(us);
+                                            break;    
+                                    
+                                        default:
+                                            break;
+                                    }
+                                } while (choix2 != 2 && choix2 != 1);
+                                break; 
+                            case 5:
+                                choix3 = affichageSousMenu("1-Actif", "2-Par role");
+                                if (choix3 == 1) {
+                                    uViews.affiche(uService.show());
+                                }
+                                else{
+                                    uViews.filtreRole(uViews.AffAss().getNomRole());
+                                }
+                                break; 
+                            default:
                                 break;
-                            }
-                
+                        }
+                    } while (choix2 != 6);
+                    break;
+                case 2:
+                    
+                    break;
+                case 3:
+                                        
+                     break;
             
-        } while (choix != 5);
+                default:
+                    break;
+            }
+            
+        } while (choix != 3);
     }
 
     public static int affichageMenuAmin(){

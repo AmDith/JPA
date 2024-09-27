@@ -1,19 +1,22 @@
 package com.ism.Repositories.Impl;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import com.ism.Repositories.Repository;
-
+import lombok.Data;
+@Data
 public class RepositoryJpaImpl<T> implements Repository<T> {
 
- 
   protected String table;
   protected EntityManager em;
   protected Class<T> type;
+  protected List<T> datas = new ArrayList<>();
+  protected T data = null;
 
 
 
@@ -54,5 +57,7 @@ public class RepositoryJpaImpl<T> implements Repository<T> {
         }
        return list;
 }
+
+ 
   
 }
